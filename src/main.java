@@ -1,0 +1,482 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public static void main(String[] args) {
+
+    ArrayList<Cliente> clientes = new ArrayList<>();
+    ArrayList<Producto> productosGeneral = new ArrayList<>();
+
+    boolean salir = false;
+
+    Scanner lectura = new Scanner(System.in);
+    String opcion = "0";
+
+    do {
+        System.out.println("**** MENÚ PRINCIPAL ****");
+        System.out.println("1. Gestión de Clientes");
+        System.out.println("2. Gestión de Productos");
+        System.out.println("3. Gestión de Inventarios");
+        System.out.println("4. Salir");
+        System.out.print("¿Qué te gustaría hacer? ");
+
+        opcion = lectura.nextLine();
+
+        switch (opcion) {
+            case "1":
+                menuClientes(lectura, clientes);
+                break;
+            case "2":
+                menuProductos(lectura, productosGeneral);
+                break;
+            case "3":
+                menuInventarios(lectura, clientes, productosGeneral);
+                break;
+            case "4":
+                System.out.println("Cerrando programa");
+                salir = true;
+                break;
+            default:
+                System.out.println("Por favor, introduce un número de la lista.");
+        }
+    } while (!salir);
+}
+
+public static void menuClientes(Scanner lectura, ArrayList<Cliente> clientes){
+
+    boolean salirSubmenuCliente = false;
+    String opcionCliente;
+
+    do{
+        System.out.println("**** GESTIÓN DE CLIENTES ****");
+        System.out.println("1. Añadir cliente");
+        System.out.println("2. Borrar cliente");
+        System.out.println("3. Modificar cliente");
+        System.out.println("4. Mostrar todos los clientes");
+        System.out.println("5. Mostrar informacion de un cliente");
+        System.out.println("6. Volver al menú principal");
+        System.out.print("Elige una opción: ");
+
+        opcionCliente = lectura.nextLine();
+
+        switch (opcionCliente) {
+            case "1":
+                clientes.add(añadirCliente(lectura));
+                System.out.println("Ficha de cliente guardada con éxito");
+                break;
+            case "2":
+                borrarCliente(lectura, clientes);
+                break;
+            case "3":
+                modificarCliente(lectura, clientes);
+                break;
+            case "4":
+                System.out.println(clientes.toString());
+                break;
+            case "5":
+                buscarCliente(lectura, clientes);
+                break;
+            case "6":
+                salirSubmenuCliente = true;
+                break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    } while (!salirSubmenuCliente);
+}
+
+public static void menuProductos(Scanner lectura, ArrayList<Producto> productosGeneral){
+
+    boolean salirSubmenuProducto = false;
+    String opcionProducto;
+
+    do{
+        System.out.println("**** GESTIÓN DE PRODUCTOS ****");
+        System.out.println("1. Añadir producto");
+        System.out.println("2. Borrar producto");
+        System.out.println("3. Modificar stock producto");
+        System.out.println("4. Modificar precio producto");
+        System.out.println("5. Mostrar todos los productos");
+        System.out.println("6. Mostrar informacion de un producto");
+        System.out.println("7. Volver al menú principal");
+        System.out.print("Elige una opción: ");
+
+        opcionProducto = lectura.nextLine();
+
+        switch (opcionProducto) {
+            case "1":
+                productosGeneral.add(añadirProducto(lectura));
+                System.out.println("Producto añadido con éxito");
+                break;
+            case "2":
+                borrarProducto(lectura, productosGeneral);
+                break;
+            case "3":
+                modificarStockProducto(lectura, productosGeneral);
+                break;
+            case "4":
+                modificarPrecioProducto(lectura, productosGeneral);
+                break;
+            case "5":
+                System.out.println(productosGeneral.toString());
+                break;
+            case "6":
+                buscarProducto(lectura, productosGeneral);
+                break;
+            case "7":
+                salirSubmenuProducto = true;
+                break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    } while (!salirSubmenuProducto);
+}
+
+public static void menuInventarios(Scanner lectura, ArrayList<Cliente> clientes, ArrayList<Producto> productosGeneral){
+
+    boolean salirSubmenuInventario = false;
+    String opcionInventario;
+
+    do{
+        System.out.println("**** GESTIÓN DE INVENTARIOS ****");
+        System.out.println("1. Añadir producto al inventario de un cliente");
+        System.out.println("2. Borrar un producto del inventario de un cliente");
+        System.out.println("3. Mostrar inventario de un cliente");
+        System.out.println("4. Borrar un inventario de cliente completo");
+        System.out.println("5. Volver al menú principal");
+        System.out.print("Elige una opción: ");
+
+        opcionInventario = lectura.nextLine();
+
+        switch (opcionInventario) {
+            case "1":
+                añadirProductoAInventario(lectura, clientes, productosGeneral);
+                break;
+            case "2":
+                borrarProductoDeInventario(lectura, clientes, productosGeneral);
+                break;
+            case "3":
+                mostrarInventario(lectura, clientes);
+                break;
+            case "4":
+                borrarInventario(lectura, clientes);
+                break;
+            case "5":
+                salirSubmenuInventario = true;
+                break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    } while (!salirSubmenuInventario);
+}
+
+public static Cliente añadirCliente(Scanner lectura){
+
+    System.out.println();
+    System.out.println("****** ALTA DE NUEVO CLIENTE ******");
+    System.out.print("Nombre del nuevo cliente: ");
+    String nuevoCliente = lectura.nextLine();
+
+    System.out.print("Edad del cliente: ");
+    int nuevaEdad = lectura.nextInt();
+    lectura.nextLine();
+
+    return new Cliente(nuevoCliente,nuevaEdad);
+}
+
+public static void borrarCliente(Scanner lectura, ArrayList<Cliente> clientes){
+
+    System.out.println("Qué cliente quieres eliminar?");
+    String clienteEliminado = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteEliminado)){
+            clientes.remove(i);
+            clienteEncontrado = true;
+            System.out.println("Se ha eliminado al cliente " + clienteEliminado + " de la lista de clientes.");
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre");
+    }
+}
+
+public static void modificarCliente(Scanner lectura, ArrayList<Cliente> clientes){
+
+    System.out.println("Qué cliente quieres modificar?");
+    String cambioCliente = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(cambioCliente)){
+            clienteEncontrado = true;
+            System.out.println("Cual es el nombre del cliente?");
+            String nuevoNombre = lectura.nextLine();
+            clientes.get(i).setNombre(nuevoNombre);
+            System.out.println("Nombre modificado con éxito");
+            System.out.println("Cuál es la edad del cliente?");
+            int nuevaEdad = lectura.nextInt();
+            lectura.nextLine();
+            clientes.get(i).setEdad(nuevaEdad);
+            System.out.println("Edad modificada con éxito");
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre");
+    }
+}
+
+public static void buscarCliente(Scanner lectura, ArrayList<Cliente> clientes){
+    System.out.println("De qué cliente quieres ver la información?");
+    String clienteBuscado = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteBuscado)){
+            System.out.println("--------------------------------");
+            System.out.println("DATOS DEL CLIENTE:");
+            System.out.println(clientes.get(i).toStringInventario());
+            System.out.println("--------------------------------");
+            clienteEncontrado = true;
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre");
+    }
+}
+
+public static Producto añadirProducto(Scanner lectura) {
+
+    System.out.println("****** ALTA DE NUEVO PRODUCTO ******");
+    System.out.print("Nombre del producto: ");
+    String nombre = lectura.nextLine();
+
+    System.out.print("Precio (usa coma ',' para decimales): ");
+    double precio = lectura.nextDouble();
+
+    System.out.print("Cantidad en stock: ");
+    int cantidad = lectura.nextInt();
+    lectura.nextLine();
+
+    return new Producto(nombre, precio, cantidad);
+}
+
+public static void borrarProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
+
+    System.out.println("Qué producto quieres eliminar?");
+    String productoEliminado = lectura.nextLine();
+    boolean productoEncontrado = false;
+
+    for (int i = 0; i < productosGeneral.size(); i++) {
+        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoEliminado)){
+            productosGeneral.remove(i);
+            productoEncontrado = true;
+            System.out.println("Se ha eliminado el producto " + productoEliminado + " del inventario de productos.");
+            break;
+        }
+    }
+    if(!productoEncontrado){
+        System.out.println("No se ha encontrado ningun producto con ese nombre");
+    }
+}
+
+public static void modificarStockProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
+
+    System.out.println("De qué producto quieres modificar el stock?");
+    String productoStockModificar = lectura.nextLine();
+    boolean productoEncontrado = false;
+
+    for (int i = 0; i < productosGeneral.size(); i++) {
+        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoStockModificar)) {
+            System.out.println("Introduce el nuevo stock del producto:");
+            int nuevoStock = lectura.nextInt();
+            lectura.nextLine();
+            productosGeneral.get(i).setCantidad(nuevoStock);
+            System.out.println("El producto " + productoStockModificar + " tiene ahora " + nuevoStock + " unidades en stock.");
+            productoEncontrado = true;
+            break;
+        }
+    }
+    if(!productoEncontrado){
+        System.out.println("No se ha encontrado ningun producto con ese nombre");
+    }
+
+}
+
+public static void modificarPrecioProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
+
+    System.out.println("De qué producto quieres modificar el precio?");
+    String productoPrecioModificar = lectura.nextLine();
+    boolean productoEncontrado = false;
+
+    for (int i = 0; i < productosGeneral.size(); i++) {
+        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoPrecioModificar)) {
+            System.out.println("Introduce el nuevo precio del producto:");
+            double nuevoPrecio = lectura.nextDouble();
+            lectura.nextLine();
+            productosGeneral.get(i).setPrecio(nuevoPrecio);
+            System.out.println("El producto " + productoPrecioModificar + " cuesta ahora " + nuevoPrecio + "€.");
+            productoEncontrado = true;
+            break;
+        }
+    }
+    if(!productoEncontrado){
+        System.out.println("No se ha encontrado ningun producto con ese nombre");
+    }
+}
+
+public static void buscarProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
+
+    System.out.println("Qué producto quieres visualizar?");
+    String productoBuscado = lectura.nextLine();
+    boolean productoEncontrado = false;
+
+    for (int i = 0; i < productosGeneral.size(); i++) {
+        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoBuscado)) {
+            System.out.println(productosGeneral.get(i).toString());
+            productoEncontrado = true;
+            break;
+        }
+    }
+    if(!productoEncontrado){
+        System.out.println("No se ha encontrado ningun producto con ese nombre");
+    }
+}
+
+public static void añadirProductoAInventario(Scanner lectura, ArrayList<Cliente> clientes, ArrayList<Producto> productosGeneral){
+
+    System.out.println("Qué cliente ha comprado?");
+    String clienteCompra = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteCompra)){
+            clienteEncontrado = true;
+
+            System.out.println("Qué producto ha comprado?");
+            String productoComprado = lectura.nextLine();
+            boolean productoEncontrado = false;
+
+            for (int j = 0; j < productosGeneral.size(); j++) {
+                if(productosGeneral.get(j).getNombre().equalsIgnoreCase(productoComprado)){
+                    productoEncontrado = true;
+
+                    if(productosGeneral.get(j).getCantidad() > 0) {
+                        clientes.get(i).getInventario().añadirProducto(productosGeneral.get(j));
+                        System.out.println("✅ El producto " + productoComprado + " se ha añadido al inventario de " + clienteCompra);
+                        int stockActual = productosGeneral.get(j).getCantidad();
+                        productosGeneral.get(j).setCantidad(stockActual - 1);
+                        System.out.println("El producto " + productoComprado + " ahora tiene " + productosGeneral.get(j).getCantidad() + " unidades en stock.");
+                    }else{
+                        System.out.println("No queda stock del producto solicitado, lo sentimos.");
+                    }
+                    break;
+                }
+            }
+            if(!productoEncontrado){
+                System.out.println("No se ha encontrado ningun producto con ese nombre.");
+            }
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
+    }
+}
+
+public static void borrarProductoDeInventario(Scanner lectura, ArrayList<Cliente> clientes, ArrayList<Producto> productosGeneral){
+
+    System.out.println("Qué cliente ha eliminado un producto?");
+    String clienteElimina = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteElimina)){
+
+            clienteEncontrado = true;
+
+            System.out.println("Qué producto ha eliminado del inventario?");
+            String productoEliminado = lectura.nextLine();
+            boolean productoEncontrado = false;
+
+            for (int j = 0; j < clientes.get(i).getInventario().getProductos().size(); j++) {
+
+                Inventario carrito = clientes.get(i).getInventario();
+                Producto productoBorradoDelCarrito = carrito.getProductos().get(j);
+
+                if(productoBorradoDelCarrito.getNombre().equalsIgnoreCase(productoEliminado)){
+
+                    productoEncontrado = true;
+                    carrito.borrarProducto(productoBorradoDelCarrito);
+                    System.out.println("El producto " + productoEliminado + " se ha eliminado del inventario del cliente " + clienteElimina);
+
+                    boolean productoEncontradoEnGeneral = false;
+
+                    for (int k = 0; k < productosGeneral.size(); k++) {
+                        if(productosGeneral.get(k).getNombre().equalsIgnoreCase(productoEliminado)){
+
+                            productoEncontradoEnGeneral = true;
+                            int stockActual = productosGeneral.get(k).getCantidad();
+                            productosGeneral.get(k).setCantidad(stockActual + 1);
+                            System.out.println("El producto " + productoEliminado + " ahora tiene " + productosGeneral.get(k).getCantidad() + " unidades en stock.");
+                            break;
+                        }
+                    }
+                    if(!productoEncontradoEnGeneral){
+                        System.out.println("El producto " + productoEliminado + " ya no existe en el almacen.");
+                    }
+                    break;
+                }
+            }
+            if(!productoEncontrado){
+                System.out.println("No se ha encontrado ningun producto con ese nombre en el inventario de este cliente.");
+            }
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
+    }
+}
+
+public static void mostrarInventario(Scanner lectura, ArrayList<Cliente> clientes){
+
+    System.out.println("De que cliente quieres ver el inventario?");
+    String clienteBuscado = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteBuscado)){
+
+            clienteEncontrado = true;
+            System.out.println(clientes.get(i).getInventario().toString());
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
+    }
+}
+
+public static void borrarInventario(Scanner lectura, ArrayList<Cliente> clientes){
+
+    System.out.println("De que cliente quieres borrar el inventario?");
+    String clienteBuscado = lectura.nextLine();
+    boolean clienteEncontrado = false;
+
+    for (int i = 0; i < clientes.size(); i++) {
+        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteBuscado)){
+
+            clienteEncontrado = true;
+            clientes.get(i).getInventario().borrarInventario();
+            System.out.println("El inventario del cliente " + clienteBuscado + " se ha eliminado.");
+            break;
+        }
+    }
+    if(!clienteEncontrado){
+        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
+    }
+}
