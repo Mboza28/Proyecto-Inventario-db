@@ -1,3 +1,5 @@
+package modelos;
+
 public class Cliente {
 
     private String nombre;

@@ -1,7 +1,24 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 
+import java.sql.Connection;
+
+import dao.ProductoDAO;
+import configDatabase.ConexionDB;
+import modelos.Cliente;
+import modelos.Inventario;
+import modelos.Producto;
+
 public static void main(String[] args) {
+
+    // Probamos si la conexion a la base de datos funciona
+    Connection prueba = ConexionDB.conectar();
+
+    if (prueba != null) {
+        System.out.println("¡Conexion realizada con éxito a la base de datos!");
+    }
+
+    ProductoDAO productoDao = new ProductoDAO();
 
     ArrayList<Cliente> clientes = new ArrayList<>();
     ArrayList<Producto> productosGeneral = new ArrayList<>();
@@ -26,7 +43,7 @@ public static void main(String[] args) {
                 menuClientes(lectura, clientes);
                 break;
             case "2":
-                menuProductos(lectura, productosGeneral);
+                menuProductos(lectura, productosGeneral, productoDao);
                 break;
             case "3":
                 menuInventarios(lectura, clientes, productosGeneral);
@@ -84,7 +101,7 @@ public static void menuClientes(Scanner lectura, ArrayList<Cliente> clientes){
     } while (!salirSubmenuCliente);
 }
 
-public static void menuProductos(Scanner lectura, ArrayList<Producto> productosGeneral){
+public static void menuProductos(Scanner lectura, ArrayList<Producto> productosGeneral, ProductoDAO productoDao){
 
     boolean salirSubmenuProducto = false;
     String opcionProducto;
@@ -104,7 +121,7 @@ public static void menuProductos(Scanner lectura, ArrayList<Producto> productosG
 
         switch (opcionProducto) {
             case "1":
-                productosGeneral.add(añadirProducto(lectura));
+                productoDao.insertarProducto(añadirProducto(lectura));
                 System.out.println("Producto añadido con éxito");
                 break;
             case "2":

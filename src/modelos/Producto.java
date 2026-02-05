@@ -1,3 +1,5 @@
+package modelos;
+
 public class Producto {
 
     private String nombre;
