@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -12,10 +13,10 @@ import modelos.Producto;
 public static void main(String[] args) {
 
     // Probamos si la conexion a la base de datos funciona
-    Connection prueba = ConexionDB.conectar();
-
-    if (prueba != null) {
+    try(Connection prueba = ConexionDB.conectar()){
         System.out.println("¡Conexion realizada con éxito a la base de datos!");
+    } catch (SQLException e) {
+        System.out.println("Error al conectar a la base de datos: " + e.getMessage());
     }
 
     ProductoDAO productoDao = new ProductoDAO();
@@ -43,7 +44,7 @@ public static void main(String[] args) {
                 menuClientes(lectura, clientes);
                 break;
             case "2":
-                menuProductos(lectura, productosGeneral, productoDao);
+                menuProductos(lectura, productoDao);
                 break;
             case "3":
                 menuInventarios(lectura, clientes, productosGeneral);
@@ -101,7 +102,7 @@ public static void menuClientes(Scanner lectura, ArrayList<Cliente> clientes){
     } while (!salirSubmenuCliente);
 }
 
-public static void menuProductos(Scanner lectura, ArrayList<Producto> productosGeneral, ProductoDAO productoDao){
+public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
 
     boolean salirSubmenuProducto = false;
     String opcionProducto;
@@ -125,7 +126,7 @@ public static void menuProductos(Scanner lectura, ArrayList<Producto> productosG
                 break;
             case "2":
                 System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
-                ArrayList<Producto> productosCoincidentes = productoDao.buscarProducto(buscarProducto(lectura));
+                ArrayList<Producto> productosCoincidentes = productoDao.buscarProductoDAO(buscarProducto(lectura));
 
                 if(productosCoincidentes.isEmpty()){
                     System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
@@ -159,10 +160,86 @@ public static void menuProductos(Scanner lectura, ArrayList<Producto> productosG
                 }
                 break;
             case "3":
-                modificarStockProducto(lectura, productosGeneral);
+                System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
+                ArrayList<Producto> productosEncontrados = productoDao.buscarProductoDAO(buscarProducto(lectura));
+
+                if(productosEncontrados.isEmpty()){
+                    System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
+                }
+                else {
+                    for (int i = 0; i < productosEncontrados.size(); i++) {
+                        System.out.println(productosEncontrados.get(i).toString());
+                    }
+                    System.out.println("De qué producto quieres modificar el stock? Introducte el ID por favor, si no quieres moficicar ninguno introduce el 0(cero)");
+                    int idProductoModificado = lectura.nextInt();
+                    lectura.nextLine();
+                    if(idProductoModificado == 0){
+                        System.out.println("Operación cancelada. Volviendo al menú...");
+                    }
+                    else{
+                        boolean esValido = false;
+
+                        for (int i = 0; i < productosEncontrados.size(); i++) {
+                            if(productosEncontrados.get(i).getId() == idProductoModificado){
+                                esValido = true;
+                                break;
+                            }
+                        }
+                        if(esValido){
+                            System.out.println("Cuál es el nuevo stock del producto?");
+                            int stockNuevo = lectura.nextInt();
+                            lectura.nextLine();
+
+                            productoDao.modificarStockDAO(idProductoModificado, stockNuevo);
+                        }
+                        else{
+                            System.out.println("Por seguridad no puedes modificar el stock del producto con ID " + idProductoModificado);
+                        }
+                    }
+                }
                 break;
             case "4":
-                modificarPrecioProducto(lectura, productosGeneral);
+                System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
+                ArrayList<Producto> productosModificados = productoDao.buscarProductoDAO(buscarProducto(lectura));
+
+                if(productosModificados.isEmpty()){
+                    System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
+                }
+                else {
+                    for (int i = 0; i < productosModificados.size(); i++) {
+                        System.out.println(productosModificados.get(i).toString());
+                    }
+                    System.out.println("De qué producto quieres modificar el precio? Introducte el ID por favor, si no quieres moficicar ninguno introduce el 0(cero)");
+                    int idProductoModificado = lectura.nextInt();
+                    lectura.nextLine();
+                    if(idProductoModificado == 0){
+                        System.out.println("Operación cancelada. Volviendo al menú...");
+                    }
+                    else{
+                        boolean esValido = false;
+
+                        for (int i = 0; i < productosModificados.size(); i++) {
+                            if(productosModificados.get(i).getId() == idProductoModificado){
+                                esValido = true;
+                                break;
+                            }
+                        }
+                        if(esValido){
+                            System.out.println("Cuál es el nuevo precio del producto?");
+                            double precioNuevo = lectura.nextDouble();
+                            lectura.nextLine();
+                            if(precioNuevo < 0){
+                                System.out.println("El producto no puede tener un precio negativo");
+                            }
+                            else{
+                                productoDao.modificarPrecioDAO(idProductoModificado,precioNuevo);
+                            }
+                        }
+                        else{
+                            System.out.println("Por seguridad no puedes modificar el precio del producto con ID " + idProductoModificado);
+                        }
+                    }
+                }
                 break;
             case "5":
                 System.out.println("--- LISTADO DE PRODUCTOS ---");
@@ -179,7 +256,7 @@ public static void menuProductos(Scanner lectura, ArrayList<Producto> productosG
                 break;
             case "6":
                 System.out.println("--- LISTADO DE PRODUCTOS ---");
-                ArrayList<Producto> busqueda = productoDao.buscarProducto(buscarProducto(lectura));
+                ArrayList<Producto> busqueda = productoDao.buscarProductoDAO(buscarProducto(lectura));
 
                 if(busqueda.isEmpty()){
                     System.out.println("El almacén está vacio");
@@ -338,51 +415,6 @@ public static int borrarProducto(Scanner lectura){
     int productoEliminado = lectura.nextInt();
     lectura.nextLine();
     return productoEliminado;
-}
-
-public static void modificarStockProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
-
-    System.out.println("De qué producto quieres modificar el stock?");
-    String productoStockModificar = lectura.nextLine();
-    boolean productoEncontrado = false;
-
-    for (int i = 0; i < productosGeneral.size(); i++) {
-        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoStockModificar)) {
-            System.out.println("Introduce el nuevo stock del producto:");
-            int nuevoStock = lectura.nextInt();
-            lectura.nextLine();
-            productosGeneral.get(i).setCantidad(nuevoStock);
-            System.out.println("El producto " + productoStockModificar + " tiene ahora " + nuevoStock + " unidades en stock.");
-            productoEncontrado = true;
-            break;
-        }
-    }
-    if(!productoEncontrado){
-        System.out.println("No se ha encontrado ningun producto con ese nombre");
-    }
-
-}
-
-public static void modificarPrecioProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
-
-    System.out.println("De qué producto quieres modificar el precio?");
-    String productoPrecioModificar = lectura.nextLine();
-    boolean productoEncontrado = false;
-
-    for (int i = 0; i < productosGeneral.size(); i++) {
-        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoPrecioModificar)) {
-            System.out.println("Introduce el nuevo precio del producto:");
-            double nuevoPrecio = lectura.nextDouble();
-            lectura.nextLine();
-            productosGeneral.get(i).setPrecio(nuevoPrecio);
-            System.out.println("El producto " + productoPrecioModificar + " cuesta ahora " + nuevoPrecio + "€.");
-            productoEncontrado = true;
-            break;
-        }
-    }
-    if(!productoEncontrado){
-        System.out.println("No se ha encontrado ningun producto con ese nombre");
-    }
 }
 
 public static String buscarProducto(Scanner lectura){

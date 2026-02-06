@@ -75,7 +75,7 @@ public class ProductoDAO {
         return inventario;
     }
 
-    public ArrayList<Producto> buscarProducto(String productoBuscado){
+    public ArrayList<Producto> buscarProductoDAO(String productoBuscado){
 
         ArrayList<Producto> inventario = new ArrayList<>();
         String sqlBuscar = "SELECT * FROM productos WHERE nombre LIKE ?";
@@ -102,5 +102,49 @@ public class ProductoDAO {
             System.out.println("Error al buscar el producto en el almacén: " + e.getMessage());
         }
         return inventario;
+    }
+
+    public void modificarStockDAO(int idModificacion, int nuevoStock){
+
+        String sqlModStock = "UPDATE productos SET cantidad = ? WHERE id = ?";
+
+        try(Connection con = ConexionDB.conectar();
+            PreparedStatement ps = con.prepareStatement(sqlModStock)){
+
+            ps.setInt(1, nuevoStock);
+            ps.setInt(2, idModificacion);
+
+            int registrosModificados = ps.executeUpdate();
+            if(registrosModificados == 0){
+                System.out.println("No se ha encontrado el producto con ID " + idModificacion + ". Inténtelo de nuevo");
+            } else{
+                System.out.println("Se ha modificado con éxito el Stock del producto");
+            }
+        }
+        catch (SQLException e) {
+            System.out.println("Error al modificar el producto: " + e.getMessage());
+        }
+    }
+
+    public void modificarPrecioDAO(int idModificacion, double nuevoPrecio){
+
+        String sqlModPrecio = "UPDATE productos SET precio = ? WHERE id = ?";
+
+        try(Connection con = ConexionDB.conectar();
+            PreparedStatement ps = con.prepareStatement(sqlModPrecio)){
+
+            ps.setDouble(1, nuevoPrecio);
+            ps.setInt(2, idModificacion);
+
+            int registrosModificados = ps.executeUpdate();
+            if(registrosModificados == 0){
+                System.out.println("No se ha encontrado el producto con ID " + idModificacion + ". Inténtelo de nuevo");
+            } else{
+                System.out.println("Se ha modificado con éxito el precio del producto");
+            }
+        }
+        catch (SQLException e) {
+            System.out.println("Error al modificar el producto: " + e.getMessage());
+        }
     }
 }
