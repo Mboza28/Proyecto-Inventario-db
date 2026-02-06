@@ -122,10 +122,41 @@ public static void menuProductos(Scanner lectura, ArrayList<Producto> productosG
         switch (opcionProducto) {
             case "1":
                 productoDao.insertarProducto(añadirProducto(lectura));
-                System.out.println("Producto añadido con éxito");
                 break;
             case "2":
-                borrarProducto(lectura, productosGeneral);
+                System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
+                ArrayList<Producto> productosCoincidentes = productoDao.buscarProducto(buscarProducto(lectura));
+
+                if(productosCoincidentes.isEmpty()){
+                    System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
+                }
+                else{
+                    for (int i = 0; i < productosCoincidentes.size(); i++) {
+                        System.out.println(productosCoincidentes.get(i).toString());
+                    }
+
+                    int idSeleccionado = borrarProducto(lectura);
+
+                    if (idSeleccionado == 0) {
+                        System.out.println("Operación cancelada. Volviendo al menú...");
+                    }
+                    else{
+                        boolean esValido = false;
+
+                        for (int i = 0; i < productosCoincidentes.size(); i++) {
+                            if(productosCoincidentes.get(i).getId() == idSeleccionado){
+                                esValido = true;
+                                break;
+                            }
+                        }
+                        if(esValido){
+                            productoDao.eliminarProducto(idSeleccionado);
+                        }
+                        else{
+                            System.out.println("Por seguridad no puedes borrar el producto con ID " + idSeleccionado);
+                        }
+                    }
+                }
                 break;
             case "3":
                 modificarStockProducto(lectura, productosGeneral);
@@ -134,10 +165,30 @@ public static void menuProductos(Scanner lectura, ArrayList<Producto> productosG
                 modificarPrecioProducto(lectura, productosGeneral);
                 break;
             case "5":
-                System.out.println(productosGeneral.toString());
+                System.out.println("--- LISTADO DE PRODUCTOS ---");
+                ArrayList<Producto> listado = productoDao.listarProductos();
+
+                if(listado.isEmpty()){
+                    System.out.println("El almacén está vacio");
+                }
+                else{
+                    for (int i = 0; i < listado.size(); i++) {
+                        System.out.println(listado.get(i).toString());
+                    }
+                }
                 break;
             case "6":
-                buscarProducto(lectura, productosGeneral);
+                System.out.println("--- LISTADO DE PRODUCTOS ---");
+                ArrayList<Producto> busqueda = productoDao.buscarProducto(buscarProducto(lectura));
+
+                if(busqueda.isEmpty()){
+                    System.out.println("El almacén está vacio");
+                }
+                else{
+                    for (int i = 0; i < busqueda.size(); i++) {
+                        System.out.println(busqueda.get(i).toString());
+                    }
+                }
                 break;
             case "7":
                 salirSubmenuProducto = true;
@@ -281,23 +332,12 @@ public static Producto añadirProducto(Scanner lectura) {
     return new Producto(nombre, precio, cantidad);
 }
 
-public static void borrarProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
+public static int borrarProducto(Scanner lectura){
 
-    System.out.println("Qué producto quieres eliminar?");
-    String productoEliminado = lectura.nextLine();
-    boolean productoEncontrado = false;
-
-    for (int i = 0; i < productosGeneral.size(); i++) {
-        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoEliminado)){
-            productosGeneral.remove(i);
-            productoEncontrado = true;
-            System.out.println("Se ha eliminado el producto " + productoEliminado + " del inventario de productos.");
-            break;
-        }
-    }
-    if(!productoEncontrado){
-        System.out.println("No se ha encontrado ningun producto con ese nombre");
-    }
+    System.out.println("Qué producto quieres eliminar? Introducte el ID por favor, si no quieres eliminar ninguno introduce el 0 (cero)");
+    int productoEliminado = lectura.nextInt();
+    lectura.nextLine();
+    return productoEliminado;
 }
 
 public static void modificarStockProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
@@ -345,22 +385,11 @@ public static void modificarPrecioProducto(Scanner lectura, ArrayList<Producto> 
     }
 }
 
-public static void buscarProducto(Scanner lectura, ArrayList<Producto> productosGeneral){
+public static String buscarProducto(Scanner lectura){
 
-    System.out.println("Qué producto quieres visualizar?");
+    System.out.println("Qué producto quieres encontrar?");
     String productoBuscado = lectura.nextLine();
-    boolean productoEncontrado = false;
-
-    for (int i = 0; i < productosGeneral.size(); i++) {
-        if(productosGeneral.get(i).getNombre().equalsIgnoreCase(productoBuscado)) {
-            System.out.println(productosGeneral.get(i).toString());
-            productoEncontrado = true;
-            break;
-        }
-    }
-    if(!productoEncontrado){
-        System.out.println("No se ha encontrado ningun producto con ese nombre");
-    }
+    return productoBuscado;
 }
 
 public static void añadirProductoAInventario(Scanner lectura, ArrayList<Cliente> clientes, ArrayList<Producto> productosGeneral){

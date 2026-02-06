@@ -2,6 +2,7 @@ package modelos;
 
 public class Producto {
 
+    private int id;
     private String nombre;
     private double precio;     //Se utiliza Double porque float los calculos no los hace exactos y a veces trunca numeros en calculos.
     private int cantidad;
@@ -14,6 +15,14 @@ public class Producto {
         this.nombre = nombre;
         this.precio = precio;
         this.cantidad = cantidad;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public String getNombre() {
@@ -50,6 +59,6 @@ public class Producto {
 
     @Override
     public String toString() {
-        return "Nombre del producto: " + nombre + ", Precio del producto: " + precio + "€, Stock del producto: " + cantidad;
+        return "ID: " + id + " | " + nombre + " - " + precio + "€ (Cant: " + cantidad + ")";
     }
 }

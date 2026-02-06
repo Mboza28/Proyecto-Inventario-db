@@ -17,8 +17,6 @@ public class ConexionDB {
         Connection conexion = null;
         try{
             conexion = DriverManager.getConnection(URL,USER,PASS);
-            System.out.println("La conexión con la supermercado_db ha sido un exito");
-            System.out.println(conexion);
         } catch (SQLException e){
             System.out.println("Error de conexión: " + e.getMessage());
         }
