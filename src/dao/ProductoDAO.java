@@ -81,8 +81,7 @@ public class ProductoDAO {
         String sqlBuscar = "SELECT * FROM productos WHERE nombre LIKE ?";
 
         try(Connection con = ConexionDB.conectar();
-            PreparedStatement ps = con.prepareStatement(sqlBuscar);
-            ){
+            PreparedStatement ps = con.prepareStatement(sqlBuscar)){
 
             ps.setString(1,"%" + productoBuscado + "%");
             try(ResultSet busqueda = ps.executeQuery()){

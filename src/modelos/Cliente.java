@@ -2,6 +2,7 @@ package modelos;
 
 public class Cliente {
 
+    private int id;
     private String nombre;
     private int edad;
     private Inventario inventario;
@@ -38,16 +39,24 @@ public class Cliente {
         }
     }
 
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Inventario getInventario() {
         return this.inventario;
     }
 
     @Override
     public String toString() {
-        return "Cliente [Nombre: " + nombre + ", Edad: " + edad + "]";
+        return "ID: " + id + " | " + nombre + " - " + edad + " años";
     }
 
     public String toStringInventario() {
-        return "Cliente [Nombre: " + nombre + ", Edad: " + edad + ", Inventario: " + inventario + "]";
+        return "ID: " + id + " | " + nombre + " - " + edad + " años |" + inventario;
     }
 }

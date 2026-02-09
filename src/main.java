@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import java.sql.Connection;
 
+import dao.ClienteDAO;
 import dao.ProductoDAO;
 import configDatabase.ConexionDB;
 import modelos.Cliente;
@@ -20,6 +21,7 @@ public static void main(String[] args) {
     }
 
     ProductoDAO productoDao = new ProductoDAO();
+    ClienteDAO clienteDao = new ClienteDAO();
 
     ArrayList<Cliente> clientes = new ArrayList<>();
     ArrayList<Producto> productosGeneral = new ArrayList<>();
@@ -41,7 +43,7 @@ public static void main(String[] args) {
 
         switch (opcion) {
             case "1":
-                menuClientes(lectura, clientes);
+                menuClientes(lectura, clienteDao, clientes);
                 break;
             case "2":
                 menuProductos(lectura, productoDao);
@@ -59,7 +61,7 @@ public static void main(String[] args) {
     } while (!salir);
 }
 
-public static void menuClientes(Scanner lectura, ArrayList<Cliente> clientes){
+public static void menuClientes(Scanner lectura, ClienteDAO clienteDao, ArrayList<Cliente> clientes){
 
     boolean salirSubmenuCliente = false;
     String opcionCliente;
@@ -78,8 +80,7 @@ public static void menuClientes(Scanner lectura, ArrayList<Cliente> clientes){
 
         switch (opcionCliente) {
             case "1":
-                clientes.add(añadirCliente(lectura));
-                System.out.println("Ficha de cliente guardada con éxito");
+                clienteDao.añadirClienteDB(añadirCliente(lectura));
                 break;
             case "2":
                 borrarCliente(lectura, clientes);
@@ -88,10 +89,30 @@ public static void menuClientes(Scanner lectura, ArrayList<Cliente> clientes){
                 modificarCliente(lectura, clientes);
                 break;
             case "4":
-                System.out.println(clientes.toString());
+                System.out.println("--- LISTADO DE CLIENTES ---");
+                ArrayList<Cliente> listado = clienteDao.listarClienteDB();
+
+                if(listado.isEmpty()){
+                    System.out.println("No hay clientes registrados");
+                }
+                else{
+                    for (int i = 0; i < listado.size(); i++) {
+                        System.out.println(listado.get(i).toString());
+                    }
+                }
                 break;
             case "5":
-                buscarCliente(lectura, clientes);
+                System.out.println("--- LISTADO DE CLIENTES ---");
+                ArrayList<Cliente> listadoBusqueda = clienteDao.buscarClienteDB(buscarCliente(lectura));
+
+                if(listadoBusqueda.isEmpty()){
+                    System.out.println("No se ha encontrado ningún cliente con ese nombre");
+                }
+                else{
+                    for(int i = 0; i < listadoBusqueda.size(); i++){
+                        System.out.println(listadoBusqueda.get(i).toString());
+                    }
+                }
                 break;
             case "6":
                 salirSubmenuCliente = true;
@@ -373,24 +394,10 @@ public static void modificarCliente(Scanner lectura, ArrayList<Cliente> clientes
     }
 }
 
-public static void buscarCliente(Scanner lectura, ArrayList<Cliente> clientes){
+public static String buscarCliente(Scanner lectura){
     System.out.println("De qué cliente quieres ver la información?");
     String clienteBuscado = lectura.nextLine();
-    boolean clienteEncontrado = false;
-
-    for (int i = 0; i < clientes.size(); i++) {
-        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteBuscado)){
-            System.out.println("--------------------------------");
-            System.out.println("DATOS DEL CLIENTE:");
-            System.out.println(clientes.get(i).toStringInventario());
-            System.out.println("--------------------------------");
-            clienteEncontrado = true;
-            break;
-        }
-    }
-    if(!clienteEncontrado){
-        System.out.println("No se ha encontrado ningun cliente con ese nombre");
-    }
+    return clienteBuscado;
 }
 
 public static Producto añadirProducto(Scanner lectura) {
