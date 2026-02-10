@@ -43,7 +43,7 @@ public static void main(String[] args) {
 
         switch (opcion) {
             case "1":
-                menuClientes(lectura, clienteDao, clientes);
+                menuClientes(lectura, clienteDao);
                 break;
             case "2":
                 menuProductos(lectura, productoDao);
@@ -61,7 +61,7 @@ public static void main(String[] args) {
     } while (!salir);
 }
 
-public static void menuClientes(Scanner lectura, ClienteDAO clienteDao, ArrayList<Cliente> clientes){
+public static void menuClientes(Scanner lectura, ClienteDAO clienteDao){
 
     boolean salirSubmenuCliente = false;
     String opcionCliente;
@@ -70,10 +70,11 @@ public static void menuClientes(Scanner lectura, ClienteDAO clienteDao, ArrayLis
         System.out.println("**** GESTIÓN DE CLIENTES ****");
         System.out.println("1. Añadir cliente");
         System.out.println("2. Borrar cliente");
-        System.out.println("3. Modificar cliente");
-        System.out.println("4. Mostrar todos los clientes");
-        System.out.println("5. Mostrar informacion de un cliente");
-        System.out.println("6. Volver al menú principal");
+        System.out.println("3. Modificar nombre de un cliente");
+        System.out.println("4. Modificar edad de un cliente");
+        System.out.println("5. Mostrar todos los clientes");
+        System.out.println("6. Mostrar informacion de un cliente");
+        System.out.println("7. Volver al menú principal");
         System.out.print("Elige una opción: ");
 
         opcionCliente = lectura.nextLine();
@@ -82,39 +83,134 @@ public static void menuClientes(Scanner lectura, ClienteDAO clienteDao, ArrayLis
             case "1":
                 clienteDao.añadirClienteDB(añadirCliente(lectura));
                 break;
-            case "2":
-                borrarCliente(lectura, clientes);
+            case "2": {
+                System.out.println(" --- LISTADO DE CLIENTES --- ");
+                ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
+
+                if (listado.isEmpty()) {
+                    System.out.println("No se ha encontrado ningún cliente con ese nombre");
+                } else {
+                    for (int i = 0; i < listado.size(); i++) {
+                        System.out.println(listado.get(i).toString());
+                    }
+
+                    int idClienteBorrar = pedirIdCliente(lectura);
+
+                    if (idClienteBorrar == 0) {
+                        System.out.println("Operación cancelada. Volviendo al menú...");
+                    } else {
+                        boolean esValido = false;
+                        for (int i = 0; i < listado.size(); i++) {
+                            if (listado.get(i).getId() == idClienteBorrar) {
+                                esValido = true;
+                                break;
+                            }
+                        }
+                        if (esValido) {
+                            clienteDao.eliminarCliente(idClienteBorrar);
+                        } else {
+                            System.out.println("Por seguridad no puedes borrar el cliente con ID " + idClienteBorrar);
+                        }
+                    }
+                }
                 break;
-            case "3":
-                modificarCliente(lectura, clientes);
+            }
+            case "3": {
+                System.out.println(" --- LISTADO DE CLIENTES --- ");
+                ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
+
+                if (listado.isEmpty()) {
+                    System.out.println("No se ha encontrado ningún cliente con ese nombre");
+                } else {
+                    for (int i = 0; i < listado.size(); i++) {
+                        System.out.println(listado.get(i).toString());
+                    }
+
+                    int idClienteNombre = pedirIdCliente(lectura);
+
+                    if (idClienteNombre == 0) {
+                        System.out.println("Operación cancelada. Volviendo al menú...");
+                    } else {
+                        boolean esValid = false;
+                        for (int i = 0; i < listado.size(); i++) {
+                            if (listado.get(i).getId() == idClienteNombre) {
+                                esValid = true;
+                                break;
+                            }
+                        }
+                        if (esValid) {
+                            System.out.println("Qué nombre nuevo quieres asignarle al cliente?");
+                            String nuevoNombre = lectura.nextLine();
+                            clienteDao.modificarNombreCliente(idClienteNombre, nuevoNombre);
+                        } else {
+                            System.out.println("Por seguridad no puedes modificar el nombre del cliente con ID " + idClienteNombre);
+                        }
+                    }
+                }
                 break;
-            case "4":
+            }
+            case "4": {
+                System.out.println(" --- LISTADO DE CLIENTES --- ");
+                ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
+
+                if (listado.isEmpty()) {
+                    System.out.println("No se ha encontrado ningún cliente con ese nombre");
+                } else {
+                    for (int i = 0; i < listado.size(); i++) {
+                        System.out.println(listado.get(i).toString());
+                    }
+
+                    int idClienteEdad = pedirIdCliente(lectura);
+
+                    if (idClienteEdad == 0) {
+                        System.out.println("Operación cancelada. Volviendo al menú...");
+                    } else {
+                        boolean esValid = false;
+                        for (int i = 0; i < listado.size(); i++) {
+                            if (listado.get(i).getId() == idClienteEdad) {
+                                esValid = true;
+                                break;
+                            }
+                        }
+                        if (esValid) {
+                            System.out.println("Qué edad nueva quieres asignarle al cliente?");
+                            int nuevaEdad = lectura.nextInt();
+                            lectura.nextLine();
+                            clienteDao.modificarEdadCliente(idClienteEdad, nuevaEdad);
+                        } else {
+                            System.out.println("Por seguridad no puedes modificar la edad del cliente con ID " + idClienteEdad);
+                        }
+                    }
+                }
+                break;
+            }
+            case "5": {
                 System.out.println("--- LISTADO DE CLIENTES ---");
                 ArrayList<Cliente> listado = clienteDao.listarClienteDB();
 
-                if(listado.isEmpty()){
+                if (listado.isEmpty()) {
                     System.out.println("No hay clientes registrados");
-                }
-                else{
+                } else {
                     for (int i = 0; i < listado.size(); i++) {
                         System.out.println(listado.get(i).toString());
                     }
                 }
                 break;
-            case "5":
+            }
+            case "6": {
                 System.out.println("--- LISTADO DE CLIENTES ---");
                 ArrayList<Cliente> listadoBusqueda = clienteDao.buscarClienteDB(buscarCliente(lectura));
 
-                if(listadoBusqueda.isEmpty()){
+                if (listadoBusqueda.isEmpty()) {
                     System.out.println("No se ha encontrado ningún cliente con ese nombre");
-                }
-                else{
-                    for(int i = 0; i < listadoBusqueda.size(); i++){
+                } else {
+                    for (int i = 0; i < listadoBusqueda.size(); i++) {
                         System.out.println(listadoBusqueda.get(i).toString());
                     }
                 }
                 break;
-            case "6":
+            }
+            case "7":
                 salirSubmenuCliente = true;
                 break;
             default:
@@ -349,49 +445,12 @@ public static Cliente añadirCliente(Scanner lectura){
     return new Cliente(nuevoCliente,nuevaEdad);
 }
 
-public static void borrarCliente(Scanner lectura, ArrayList<Cliente> clientes){
+public static int pedirIdCliente(Scanner lectura){
 
-    System.out.println("Qué cliente quieres eliminar?");
-    String clienteEliminado = lectura.nextLine();
-    boolean clienteEncontrado = false;
-
-    for (int i = 0; i < clientes.size(); i++) {
-        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteEliminado)){
-            clientes.remove(i);
-            clienteEncontrado = true;
-            System.out.println("Se ha eliminado al cliente " + clienteEliminado + " de la lista de clientes.");
-            break;
-        }
-    }
-    if(!clienteEncontrado){
-        System.out.println("No se ha encontrado ningun cliente con ese nombre");
-    }
-}
-
-public static void modificarCliente(Scanner lectura, ArrayList<Cliente> clientes){
-
-    System.out.println("Qué cliente quieres modificar?");
-    String cambioCliente = lectura.nextLine();
-    boolean clienteEncontrado = false;
-
-    for (int i = 0; i < clientes.size(); i++) {
-        if(clientes.get(i).getNombre().equalsIgnoreCase(cambioCliente)){
-            clienteEncontrado = true;
-            System.out.println("Cual es el nombre del cliente?");
-            String nuevoNombre = lectura.nextLine();
-            clientes.get(i).setNombre(nuevoNombre);
-            System.out.println("Nombre modificado con éxito");
-            System.out.println("Cuál es la edad del cliente?");
-            int nuevaEdad = lectura.nextInt();
-            lectura.nextLine();
-            clientes.get(i).setEdad(nuevaEdad);
-            System.out.println("Edad modificada con éxito");
-            break;
-        }
-    }
-    if(!clienteEncontrado){
-        System.out.println("No se ha encontrado ningun cliente con ese nombre");
-    }
+    System.out.println("Qué cliente quieres seleccionar? Introducte el ID por favor, si no quieres eliminar ninguno introduce el 0 (cero)");
+    int idCliente = lectura.nextInt();
+    lectura.nextLine();
+    return idCliente;
 }
 
 public static String buscarCliente(Scanner lectura){
