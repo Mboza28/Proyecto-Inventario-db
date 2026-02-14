@@ -16,7 +16,7 @@ public static void main(String[] args) {
     // Probamos si la conexion a la base de datos funciona
     try(Connection prueba = ConexionDB.conectar()){
         System.out.println("¡Conexion realizada con éxito a la base de datos!");
-    } catch (SQLException e) {
+    }catch(SQLException e){
         System.out.println("Error al conectar a la base de datos: " + e.getMessage());
     }
 
@@ -29,17 +29,19 @@ public static void main(String[] args) {
     Scanner lectura = new Scanner(System.in);
     String opcion = "0";
 
-    do {
+    do{
+        System.out.println();
         System.out.println("**** MENÚ PRINCIPAL ****");
         System.out.println("1. Gestión de Clientes");
         System.out.println("2. Gestión de Productos");
         System.out.println("3. Gestión de Inventarios");
         System.out.println("4. Salir");
-        System.out.print("¿Qué te gustaría hacer? ");
+        System.out.print("Elige una opción: ");
+        System.out.println();
 
         opcion = lectura.nextLine();
 
-        switch (opcion) {
+        switch(opcion){
             case "1":
                 menuClientes(lectura, clienteDao);
                 break;
@@ -56,7 +58,7 @@ public static void main(String[] args) {
             default:
                 System.out.println("Por favor, introduce un número de la lista.");
         }
-    } while (!salir);
+    }while(!salir);
 }
 
 public static void menuClientes(Scanner lectura, ClienteDAO clienteDao){
@@ -65,6 +67,7 @@ public static void menuClientes(Scanner lectura, ClienteDAO clienteDao){
     String opcionCliente;
 
     do{
+        System.out.println();
         System.out.println("**** GESTIÓN DE CLIENTES ****");
         System.out.println("1. Añadir cliente");
         System.out.println("2. Borrar cliente");
@@ -74,147 +77,180 @@ public static void menuClientes(Scanner lectura, ClienteDAO clienteDao){
         System.out.println("6. Mostrar informacion de un cliente");
         System.out.println("7. Volver al menú principal");
         System.out.print("Elige una opción: ");
+        System.out.println();
 
         opcionCliente = lectura.nextLine();
 
-        switch (opcionCliente) {
-            case "1":
+        switch(opcionCliente){
+            case "1":{
                 clienteDao.añadirClienteDB(añadirCliente(lectura));
                 break;
-            case "2": {
-                System.out.println(" --- LISTADO DE CLIENTES --- ");
+            }
+            case "2":{
+
                 ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
 
-                if (listado.isEmpty()) {
+                if(listado.isEmpty()){
                     System.out.println("No se ha encontrado ningún cliente con ese nombre");
-                } else {
-                    for (int i = 0; i < listado.size(); i++) {
+                }else{
+                    System.out.println();
+                    System.out.println(" --- LISTADO DE CLIENTES ENCONTRADOS --- ");
+                    for(int i = 0; i < listado.size(); i++){
                         System.out.println(listado.get(i).toString());
                     }
 
                     int idClienteBorrar = pedirIdCliente(lectura);
 
-                    if (idClienteBorrar == 0) {
+                    if(idClienteBorrar == 0){
                         System.out.println("Operación cancelada. Volviendo al menú...");
-                    } else {
+                    }else{
                         boolean esValido = false;
-                        for (int i = 0; i < listado.size(); i++) {
-                            if (listado.get(i).getId() == idClienteBorrar) {
+                        for(int i = 0; i < listado.size(); i++){
+                            if(listado.get(i).getId() == idClienteBorrar){
                                 esValido = true;
                                 break;
                             }
                         }
-                        if (esValido) {
+                        if(esValido){
                             clienteDao.eliminarCliente(idClienteBorrar);
-                        } else {
+                        }else{
                             System.out.println("Por seguridad no puedes borrar el cliente con ID " + idClienteBorrar);
                         }
                     }
                 }
                 break;
             }
-            case "3": {
-                System.out.println(" --- LISTADO DE CLIENTES --- ");
+            case "3":{
+
                 ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
 
-                if (listado.isEmpty()) {
+                if(listado.isEmpty()){
                     System.out.println("No se ha encontrado ningún cliente con ese nombre");
-                } else {
-                    for (int i = 0; i < listado.size(); i++) {
+                }else{
+                    System.out.println();
+                    System.out.println(" --- LISTADO DE CLIENTES ENCONTRADOS --- ");
+                    for(int i = 0; i < listado.size(); i++){
                         System.out.println(listado.get(i).toString());
                     }
 
                     int idClienteNombre = pedirIdCliente(lectura);
 
-                    if (idClienteNombre == 0) {
+                    if(idClienteNombre == 0){
                         System.out.println("Operación cancelada. Volviendo al menú...");
-                    } else {
-                        boolean esValid = false;
-                        for (int i = 0; i < listado.size(); i++) {
-                            if (listado.get(i).getId() == idClienteNombre) {
-                                esValid = true;
+                    }else{
+                        boolean esValido = false;
+                        for(int i = 0; i < listado.size(); i++){
+                            if(listado.get(i).getId() == idClienteNombre){
+                                esValido = true;
                                 break;
                             }
                         }
-                        if (esValid) {
+                        if(esValido){
                             System.out.println("Qué nombre nuevo quieres asignarle al cliente?");
                             String nuevoNombre = lectura.nextLine();
                             clienteDao.modificarNombreCliente(idClienteNombre, nuevoNombre);
-                        } else {
+                        }else{
                             System.out.println("Por seguridad no puedes modificar el nombre del cliente con ID " + idClienteNombre);
                         }
                     }
                 }
                 break;
             }
-            case "4": {
-                System.out.println(" --- LISTADO DE CLIENTES --- ");
+            case "4":{
+
                 ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
 
-                if (listado.isEmpty()) {
+                if(listado.isEmpty()){
                     System.out.println("No se ha encontrado ningún cliente con ese nombre");
-                } else {
-                    for (int i = 0; i < listado.size(); i++) {
+                }else{
+                    System.out.println();
+                    System.out.println(" --- LISTADO DE CLIENTES ENCONTRADOS --- ");
+                    for(int i = 0; i < listado.size(); i++){
                         System.out.println(listado.get(i).toString());
                     }
 
-                    int idClienteEdad = pedirIdCliente(lectura);
+                    int idCliente = pedirIdCliente(lectura);
 
-                    if (idClienteEdad == 0) {
+                    if(idCliente == 0){
                         System.out.println("Operación cancelada. Volviendo al menú...");
-                    } else {
-                        boolean esValid = false;
-                        for (int i = 0; i < listado.size(); i++) {
-                            if (listado.get(i).getId() == idClienteEdad) {
-                                esValid = true;
+                    }else{
+                        boolean esValido = false;
+                        for(int i = 0; i < listado.size(); i++){
+                            if(listado.get(i).getId() == idCliente){
+                                esValido = true;
                                 break;
                             }
                         }
-                        if (esValid) {
-                            System.out.println("Qué edad nueva quieres asignarle al cliente?");
-                            int nuevaEdad = lectura.nextInt();
-                            lectura.nextLine();
-                            clienteDao.modificarEdadCliente(idClienteEdad, nuevaEdad);
-                        } else {
-                            System.out.println("Por seguridad no puedes modificar la edad del cliente con ID " + idClienteEdad);
+                        if(esValido){
+
+                            int nuevaEdad = -1;
+                            esValido = false;
+
+                            while(!esValido){
+                                System.out.print("Escribe la edad del cliente: ");
+                                try{
+                                    if(lectura.hasNextInt()){
+                                        nuevaEdad = lectura.nextInt();
+                                        lectura.nextLine();
+
+                                        if(nuevaEdad >= 0 && nuevaEdad <= 113){
+                                            esValido = true;
+                                        }else{
+                                            System.out.println("La edad introducida no es válida. Por favor, introduce un valor entre 0 y 113 años");
+                                        }
+                                    }else{
+                                        System.out.println("Por favor, introduce un número");
+                                        lectura.next();
+                                    }
+                                }catch(Exception e){
+                                    System.out.println("Ha ocurrido un error: " + e.getMessage());
+                                    lectura.nextLine();
+                                }
+                            }
+                            clienteDao.modificarEdadCliente(idCliente, nuevaEdad);
+                        }else{
+                            System.out.println("Por seguridad no puedes modificar la edad del cliente con ID " + idCliente);
                         }
                     }
                 }
                 break;
             }
-            case "5": {
-                System.out.println("--- LISTADO DE CLIENTES ---");
+            case "5":{
                 ArrayList<Cliente> listado = clienteDao.listarClienteDB();
 
-                if (listado.isEmpty()) {
+                if(listado.isEmpty()){
                     System.out.println("No hay clientes registrados");
-                } else {
-                    for (int i = 0; i < listado.size(); i++) {
+                }else{
+                    System.out.println();
+                    System.out.println(" --- LISTADO DE CLIENTES --- ");
+                    for(int i = 0; i < listado.size(); i++){
                         System.out.println(listado.get(i).toString());
                     }
                 }
                 break;
             }
-            case "6": {
-                System.out.println("--- LISTADO DE CLIENTES ---");
+            case "6":{
                 ArrayList<Cliente> listadoBusqueda = clienteDao.buscarClienteDB(buscarCliente(lectura));
 
-                if (listadoBusqueda.isEmpty()) {
+                if(listadoBusqueda.isEmpty()){
                     System.out.println("No se ha encontrado ningún cliente con ese nombre");
-                } else {
-                    for (int i = 0; i < listadoBusqueda.size(); i++) {
+                }else{
+                    System.out.println();
+                    System.out.println(" --- LISTADO DE CLIENTES ENCONTRADOS --- ");
+                    for(int i = 0; i < listadoBusqueda.size(); i++){
                         System.out.println(listadoBusqueda.get(i).toString());
                     }
                 }
                 break;
             }
-            case "7":
+            case "7":{
                 salirSubmenuCliente = true;
                 break;
+            }
             default:
                 System.out.println("Opción no válida.");
         }
-    } while (!salirSubmenuCliente);
+    } while(!salirSubmenuCliente);
 }
 
 public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
@@ -223,6 +259,7 @@ public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
     String opcionProducto;
 
     do{
+        System.out.println();
         System.out.println("**** GESTIÓN DE PRODUCTOS ****");
         System.out.println("1. Añadir producto");
         System.out.println("2. Borrar producto");
@@ -235,18 +272,20 @@ public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
 
         opcionProducto = lectura.nextLine();
 
-        switch (opcionProducto) {
-            case "1": {
+        switch(opcionProducto){
+            case "1":{
                 productoDao.insertarProducto(añadirProducto(lectura));
                 break;
             }
-            case "2": {
-                System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
+            case "2":{
+
                 ArrayList<Producto> productosCoincidentes = productoDao.buscarProductoDAO(buscarIdProducto(lectura));
 
                 if (productosCoincidentes.isEmpty()) {
                     System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
-                } else {
+                }else{
+                    System.out.println();
+                    System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS ---");
                     for (int i = 0; i < productosCoincidentes.size(); i++) {
                         System.out.println(productosCoincidentes.get(i).toString());
                     }
@@ -273,16 +312,19 @@ public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
                 }
                 break;
             }
-            case "3": {
-                System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
+            case "3":{
+
                 ArrayList<Producto> productosCoincidentes = productoDao.buscarProductoDAO(buscarIdProducto(lectura));
 
-                if (productosCoincidentes.isEmpty()) {
+                if(productosCoincidentes.isEmpty()){
                     System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
                 } else {
+                    System.out.println();
+                    System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS ---");
                     for (int i = 0; i < productosCoincidentes.size(); i++) {
                         System.out.println(productosCoincidentes.get(i).toString());
                     }
+                    System.out.println();
                     System.out.println("De qué producto quieres modificar el stock? Introducte el ID por favor, si no quieres moficicar ninguno introduce el 0(cero)");
                     int idProductoModificado = lectura.nextInt();
                     lectura.nextLine();
@@ -310,13 +352,15 @@ public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
                 }
                 break;
             }
-            case "4": {
-                System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
+            case "4":{
+
                 ArrayList<Producto> productosCoincidentes = productoDao.buscarProductoDAO(buscarIdProducto(lectura));
 
-                if (productosCoincidentes.isEmpty()) {
+                if(productosCoincidentes.isEmpty()){
                     System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
-                } else {
+                }else{
+                    System.out.println();
+                    System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS ---");
                     for (int i = 0; i < productosCoincidentes.size(); i++) {
                         System.out.println(productosCoincidentes.get(i).toString());
                     }
@@ -350,35 +394,40 @@ public static void menuProductos(Scanner lectura, ProductoDAO productoDao){
                 }
                 break;
             }
-            case "5":
-                System.out.println("--- LISTADO DE PRODUCTOS ---");
+            case "5": {
+
                 ArrayList<Producto> listado = productoDao.listarProductos();
 
-                if(listado.isEmpty()){
+                if (listado.isEmpty()) {
                     System.out.println("El almacén está vacio");
-                }
-                else{
+                } else {
+                    System.out.println();
+                    System.out.println("--- LISTADO DE PRODUCTOS ---");
                     for (int i = 0; i < listado.size(); i++) {
                         System.out.println(listado.get(i).toString());
                     }
                 }
                 break;
+            }
             case "6": {
-                System.out.println("--- LISTADO DE PRODUCTOS ---");
+
                 ArrayList<Producto> productosCoincidentes = productoDao.buscarProductoDAO(buscarIdProducto(lectura));
 
                 if (productosCoincidentes.isEmpty()) {
                     System.out.println("El almacén está vacio");
                 } else {
+                    System.out.println();
+                    System.out.println("--- LISTADO DE PRODUCTOS ---");
                     for (int i = 0; i < productosCoincidentes.size(); i++) {
                         System.out.println(productosCoincidentes.get(i).toString());
                     }
                 }
                 break;
             }
-            case "7":
+            case "7": {
                 salirSubmenuProducto = true;
                 break;
+            }
             default:
                 System.out.println("Opción no válida.");
         }
@@ -474,18 +523,68 @@ public static void menuInventarios(Scanner lectura, ClienteDAO clienteDao, Produ
                 }
                 break;
             }
-            case "2":
-                borrarProductoDeInventario(lectura, clientes, productosGeneral);
+            case "2": {
+                int idCliente = seleccionarCliente(lectura, clienteDao);
+
+                if(idCliente == 0){
+                    break;
+                }
+                else{
+                    ArrayList<String> productosEncontrados = new ArrayList<>();
+                    productosEncontrados = (inventarioDao.listarInventarioCliente(idCliente));
+                    if(productosEncontrados.isEmpty()){
+                        System.out.println("No se han encontrado productos en el inventario de este cliente.");
+                    }
+                    else{
+                        for (int i = 0; i < productosEncontrados.size(); i++) {
+                            System.out.println(productosEncontrados.get(i));
+                        }
+                        int idProducto = seleccionarProducto(lectura, productoDao);
+
+                        if(idProducto == 0){
+                            break;
+                        }
+                        else{
+                            inventarioDao.eliminarProductos(idCliente, idProducto);
+                        }
+                    }
+                }
                 break;
-            case "3":
-                mostrarInventario(lectura, clientes);
+            }
+            case "3": {
+                int eleccionCliente = seleccionarCliente(lectura, clienteDao);
+
+                if(eleccionCliente == 0){
+                    break;
+                }
+                else{
+                    ArrayList<String> productosEncontrados = new ArrayList<>();
+                    productosEncontrados = (inventarioDao.listarInventarioCliente(eleccionCliente));
+                    if(productosEncontrados.isEmpty()){
+                        System.out.println("No se han encontrado productos en el inventario de este cliente.");
+                    }
+                    else{
+                        for (int i = 0; i < productosEncontrados.size(); i++) {
+                            System.out.println(productosEncontrados.get(i));
+                        }
+                    }
+                }
                 break;
-            case "4":
-                borrarInventario(lectura, clientes);
+            }
+            case "4": {
+                int eleccionCliente = seleccionarCliente(lectura, clienteDao);
+                if(eleccionCliente == 0){
+                    break;
+                }
+                else{
+                    inventarioDao.eliminarInventario(eleccionCliente);
+                }
                 break;
-            case "5":
+            }
+            case "5": {
                 salirSubmenuInventario = true;
                 break;
+            }
             default:
                 System.out.println("Opción no válida.");
         }
@@ -499,29 +598,43 @@ public static Cliente añadirCliente(Scanner lectura){
     System.out.print("Nombre del nuevo cliente: ");
     String nuevoCliente = lectura.nextLine();
 
-    System.out.print("Edad del cliente: ");
-    int nuevaEdad = lectura.nextInt();
-    lectura.nextLine();
+    int nuevaEdad = -1;
+    boolean esValido = false;
 
-    return new Cliente(nuevoCliente,nuevaEdad);
-}
+    while(!esValido){
+        System.out.print("Edad del cliente: ");
+        try{
+            if(lectura.hasNextInt()){
+                nuevaEdad = lectura.nextInt();
+                lectura.nextLine();
 
-public static int pedirIdCliente(Scanner lectura){
-
-    System.out.println("Qué cliente quieres seleccionar? Introducte el ID por favor, si no quieres eliminar ninguno introduce el 0 (cero)");
-    int idCliente = lectura.nextInt();
-    lectura.nextLine();
-    return idCliente;
+                if(nuevaEdad >= 0 && nuevaEdad <= 113){
+                    esValido = true;
+                }else{
+                    System.out.println("La edad introducida no es válida. Por favor, introduce un valor entre 0 y 113 años");
+                }
+            }else{
+                System.out.println("Por favor, introduce un número");
+                lectura.next();
+            }
+        }catch(Exception e){
+            System.out.println("Ha ocurrido un error: " + e.getMessage());
+            lectura.nextLine();
+        }
+    }
+    return new Cliente(nuevoCliente, nuevaEdad);
 }
 
 public static String buscarCliente(Scanner lectura){
-    System.out.println("Qué cliente quieres seleccionar?");
+    System.out.println();
+    System.out.println("Escribe el nombre del cliente sobre el que quieres realizar la acción:");
     String clienteBuscado = lectura.nextLine();
     return clienteBuscado;
 }
 
 public static Producto añadirProducto(Scanner lectura) {
 
+    System.out.println();
     System.out.println("****** ALTA DE NUEVO PRODUCTO ******");
     System.out.print("Nombre del producto: ");
     String nombre = lectura.nextLine();
@@ -538,6 +651,7 @@ public static Producto añadirProducto(Scanner lectura) {
 
 public static int borrarProducto(Scanner lectura){
 
+    System.out.println();
     System.out.println("Qué producto quieres eliminar? Introducte el ID por favor, si no quieres eliminar ninguno introduce el 0 (cero)");
     int productoEliminado = lectura.nextInt();
     lectura.nextLine();
@@ -546,13 +660,24 @@ public static int borrarProducto(Scanner lectura){
 
 public static String buscarIdProducto(Scanner lectura){
 
+    System.out.println();
     System.out.println("Qué producto quieres encontrar?");
     String productoBuscado = lectura.nextLine();
     return productoBuscado;
 }
 
+public static int pedirIdCliente(Scanner lectura){
+
+    System.out.println();
+    System.out.println("Qué cliente quieres seleccionar? Introducte el ID por favor, si no quieres seleccionar ninguno introduce el 0 (cero)");
+    int idCliente = lectura.nextInt();
+    lectura.nextLine();
+    return idCliente;
+}
+
 public static int seleccionarCliente(Scanner lectura, ClienteDAO clienteDao){
 
+    System.out.println();
     System.out.println(" --- LISTADO DE CLIENTES ENCONTRADOS --- ");
     ArrayList<Cliente> listado = clienteDao.buscarClienteDB(buscarCliente(lectura));
 
@@ -568,6 +693,7 @@ public static int seleccionarCliente(Scanner lectura, ClienteDAO clienteDao){
     int idCliente = pedirIdCliente(lectura);
 
     if (idCliente == 0) {
+        System.out.println("Operación cancelada. Volviendo al menú...");
         return 0;
     }
     for (int i = 0; i < listado.size(); i++) {
@@ -581,11 +707,12 @@ public static int seleccionarCliente(Scanner lectura, ClienteDAO clienteDao){
 
 public static int seleccionarProducto(Scanner lectura, ProductoDAO productoDao){
 
+    System.out.println();
     System.out.println("--- LISTADO DE PRODUCTOS ENCONTRADOS CON ESE NOMBRE ---");
     ArrayList<Producto> productosCoincidentes = productoDao.buscarProductoDAO(buscarIdProducto(lectura));
 
     if (productosCoincidentes.isEmpty()) {
-        System.out.println("No se ha encontrado el producto solicitado en el almacén. Inténtelo de nuevo");
+        System.out.println("No se ha encontrado el producto solicitado. Inténtelo de nuevo");
         return 0;
     }
 
@@ -599,6 +726,7 @@ public static int seleccionarProducto(Scanner lectura, ProductoDAO productoDao){
     lectura.nextLine();
 
     if (idProducto == 0) {
+        System.out.println("Operación cancelada. Volviendo al menú...");
         return 0;
     }
 
@@ -616,98 +744,4 @@ public static int seleccionarProducto(Scanner lectura, ProductoDAO productoDao){
 
     System.out.println("Por seguridad no puedes seleccionar el producto con ID " + idProducto);
     return 0;
-}
-
-public static void borrarProductoDeInventario(Scanner lectura, ArrayList<Cliente> clientes, ArrayList<Producto> productosGeneral){
-
-    System.out.println("Qué cliente ha eliminado un producto?");
-    String clienteElimina = lectura.nextLine();
-    boolean clienteEncontrado = false;
-
-    for (int i = 0; i < clientes.size(); i++) {
-        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteElimina)){
-
-            clienteEncontrado = true;
-
-            System.out.println("Qué producto ha eliminado del inventario?");
-            String productoEliminado = lectura.nextLine();
-            boolean productoEncontrado = false;
-
-            for (int j = 0; j < clientes.get(i).getInventario().getProductos().size(); j++) {
-
-                Inventario carrito = clientes.get(i).getInventario();
-                Producto productoBorradoDelCarrito = carrito.getProductos().get(j);
-
-                if(productoBorradoDelCarrito.getNombre().equalsIgnoreCase(productoEliminado)){
-
-                    productoEncontrado = true;
-                    carrito.borrarProducto(productoBorradoDelCarrito);
-                    System.out.println("El producto " + productoEliminado + " se ha eliminado del inventario del cliente " + clienteElimina);
-
-                    boolean productoEncontradoEnGeneral = false;
-
-                    for (int k = 0; k < productosGeneral.size(); k++) {
-                        if(productosGeneral.get(k).getNombre().equalsIgnoreCase(productoEliminado)){
-
-                            productoEncontradoEnGeneral = true;
-                            int stockActual = productosGeneral.get(k).getCantidad();
-                            productosGeneral.get(k).setCantidad(stockActual + 1);
-                            System.out.println("El producto " + productoEliminado + " ahora tiene " + productosGeneral.get(k).getCantidad() + " unidades en stock.");
-                            break;
-                        }
-                    }
-                    if(!productoEncontradoEnGeneral){
-                        System.out.println("El producto " + productoEliminado + " ya no existe en el almacen.");
-                    }
-                    break;
-                }
-            }
-            if(!productoEncontrado){
-                System.out.println("No se ha encontrado ningun producto con ese nombre en el inventario de este cliente.");
-            }
-            break;
-        }
-    }
-    if(!clienteEncontrado){
-        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
-    }
-}
-
-public static void mostrarInventario(Scanner lectura, ArrayList<Cliente> clientes){
-
-    System.out.println("De que cliente quieres ver el inventario?");
-    String clienteBuscado = lectura.nextLine();
-    boolean clienteEncontrado = false;
-
-    for (int i = 0; i < clientes.size(); i++) {
-        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteBuscado)){
-
-            clienteEncontrado = true;
-            System.out.println(clientes.get(i).getInventario().toString());
-            break;
-        }
-    }
-    if(!clienteEncontrado){
-        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
-    }
-}
-
-public static void borrarInventario(Scanner lectura, ArrayList<Cliente> clientes){
-
-    System.out.println("De que cliente quieres borrar el inventario?");
-    String clienteBuscado = lectura.nextLine();
-    boolean clienteEncontrado = false;
-
-    for (int i = 0; i < clientes.size(); i++) {
-        if(clientes.get(i).getNombre().equalsIgnoreCase(clienteBuscado)){
-
-            clienteEncontrado = true;
-            clientes.get(i).getInventario().borrarInventario();
-            System.out.println("El inventario del cliente " + clienteBuscado + " se ha eliminado.");
-            break;
-        }
-    }
-    if(!clienteEncontrado){
-        System.out.println("No se ha encontrado ningun cliente con ese nombre.");
-    }
 }

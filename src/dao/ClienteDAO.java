@@ -24,7 +24,7 @@ public class ClienteDAO {
             ps.executeUpdate();
             System.out.println("Cliente guardado correctamente en el sistema.");
 
-        } catch(SQLException e){
+        }catch(SQLException e){
             System.out.println("Error al añadir al cliente: " + e.getMessage());
         }
     }
