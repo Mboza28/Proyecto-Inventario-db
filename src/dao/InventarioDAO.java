@@ -25,6 +25,7 @@ public class InventarioDAO {
 
             ps.executeUpdate();
             System.out.println("Producto añadido correctamente al carrito.");
+            System.out.println();
 
         } catch(SQLException e){
             System.out.println("Error al añadir producto al carrito del cliente: " + e.getMessage());
